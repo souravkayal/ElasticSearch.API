@@ -1,20 +1,9 @@
-﻿using Elasticsearch.Net;
-using Microsoft.AspNetCore.Http;
+﻿using ElasticSearch.API.Model;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
-using Newtonsoft.Json;
-using System;
-using System.Text.Json.Serialization;
 
 namespace ElasticSearch.API.Controllers
 {
-
-    public class Person
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-    }
 
     [ApiController]
     [Route("[controller]")]
@@ -29,18 +18,27 @@ namespace ElasticSearch.API.Controllers
         }
 
 
+        /// <summary>
+        /// Function to Add
+        /// </summary>
+        /// <param name="person"></param>
+        /// <returns>Success message of indexing</returns>
         [HttpPost("add-person")]
-        public IActionResult AddPeople(Person person)
+        public IActionResult AddPerson(Person person)
         {
             var indexResponse = _client.Index(person, idx => idx.Index(index));
             return Ok(indexResponse);
         }
 
 
+        /// <summary>
+        /// Function to search Person model by name or surname
+        /// </summary>
+        /// <param name="text">name or surname</param>
+        /// <returns>Matching List<person> response</returns>
         [HttpGet("/search-person/{text}")]
         public IActionResult CreateIndex(string text)
         {
-
             var searchResponse = _client.Search<Person>(s => s
                 .Index(index)
                 .Query(q => q
